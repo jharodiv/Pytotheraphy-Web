@@ -7,6 +7,11 @@ export interface UseAuthReturn {
     login: (data: LoginRequest) => Promise<LoginResponse>;
 }
 
+export interface LoginValidationError {
+    email?: string;
+    password?: string;
+}
+
 export type LoginRequest = {
     email: string;
     password: string;
