@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Button, Card, Input } from "@components/ui";
 
-import { useLogin } from "@hooks/authentication/useLogin";
+import { useLogin } from "@hooks/authentication/useAuth";
 
 import logo from "@assets/images/LOGO.png";
 

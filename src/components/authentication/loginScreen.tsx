@@ -1,18 +1,14 @@
-import { useLogin } from "@hooks/authentication/useLogin";
+import { useAuth } from "@hooks/authentication/useAuth";
 
 import styles from "./Login.module.css";
 
 export default function LoginScreen() {
     const {
-        email,
-        setEmail,
-        password,
-        setPassword,
-        emailError,
-        passwordError,
-        loading,
-        handleLogin,
-    } = useLogin();
+        user,
+        login,
+        error,
+        loading
+    } = useAuth();
 
     return (
         <div className={styles.container}>
