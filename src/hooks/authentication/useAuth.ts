@@ -1,7 +1,6 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import { login as loginService } from "@service/authentication/auth.service";
-
 import { validateLogin } from "@validation/authentication/auth.validation";
 
 import type {
@@ -21,6 +20,8 @@ export function useAuth(): UseAuthReturn {
 
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
+
+    const navigate = useNavigate();
 
     const login = async (data: LoginRequest) => {
         try {
@@ -76,12 +77,8 @@ export function useAuth(): UseAuthReturn {
 
             setUser(response.user);
 
+            navigate('/dashboard');
 
-            console.log(
-                "Login Done"
-            );
-
-            return response;
         } catch (err) {
             const message = err instanceof Error ? err.message : "Login Failed";
 
@@ -92,6 +89,7 @@ export function useAuth(): UseAuthReturn {
             setLoading(false);
         }
     }
+
     return {
         user,
         login,
