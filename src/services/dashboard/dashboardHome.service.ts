@@ -7,50 +7,26 @@ import {
     Timestamp
 } from "firebase/firestore";
 
-import type { DashboardStats, UserMonthlyCount } from "@model/dashboard/dashboard.model";
+import { type DashboardStats, type UserMonthlyCount } from "@model/dashboard/dashboard.model";
+import { API_ROUTES } from "@constant/api/api-routes";
+import { apiRequest } from "@service/api/api";
 
-const PLANTS_COLLECTION = "plants";
 const USERS_COLLECTION = "users";
-const PLANT_CACHE_COLLECTION = "plant_cache"
 
 // GET THE COUNT OF THE TOTAL PLANTS, VERIFIED PLANTS,
 // UNVERIFIED PLANTS, AND TOTAL USERS USING FIRESTORE
 
 export async function getDashboardStats(): Promise<DashboardStats> {
     try {
-        const plantsRef = collection(db, PLANTS_COLLECTION);
-        const usersRef = collection(db, USERS_COLLECTION);
-        const plantCacheRef = collection(
-            db,
-            PLANT_CACHE_COLLECTION
+        const response = await apiRequest<DashboardStats>(
+            API_ROUTES.DASHBOARD.GET_DASHBOARD,
+            {
+                method: "GET",
+            }
         );
 
-        const [
-            verifiedPlantsSnapshot,
-            unverifiedPlantsSnapshot,
-            totalUsersSnapshot,
-        ] = await Promise.all([
-            getCountFromServer(plantsRef),
-            getCountFromServer(plantCacheRef),
-            getCountFromServer(usersRef),
-        ]);
+        return response;
 
-        const verifiedPlants =
-            verifiedPlantsSnapshot.data().count;
-
-        const unverifiedPlants =
-            unverifiedPlantsSnapshot.data().count;
-
-        return {
-            totalPlants:
-                verifiedPlants + unverifiedPlants,
-
-            verifiedPlants,
-            unverifiedPlants,
-
-            totalUsers:
-                totalUsersSnapshot.data().count,
-        };
     } catch (error) {
         console.error(
             "Failed to fetch dashboard statistics:",
