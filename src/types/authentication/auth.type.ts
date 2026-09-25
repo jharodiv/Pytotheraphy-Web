@@ -3,8 +3,31 @@ export interface UseAuthReturn {
     user: User | null;
     error: string | null;
     loading: boolean;
+    emailError: string | null;
+    passwordError: string | null;
+    email: string;
+    password: string;
+    setEmail: (email: string) => void;
+    setPassword: (password: string) => void;
+    handleLogin: () => Promise<LoginResponse>;
 
     login: (data: LoginRequest) => Promise<LoginResponse>;
+}
+
+export interface LoginFormProps {
+    email: string;
+    password: string;
+
+    setEmail: (email: string) => void;
+    setPassword: (password: string) => void;
+
+    emailError: string;
+    passwordError: string;
+
+    loading: boolean;
+    error: string;
+
+    handleLogin: () => Promise<LoginResponse>;
 }
 
 export interface LoginValidationError {

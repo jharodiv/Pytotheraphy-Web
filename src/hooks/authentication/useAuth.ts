@@ -16,7 +16,6 @@ export function useAuth(): UseAuthReturn {
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
 
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -77,6 +76,11 @@ export function useAuth(): UseAuthReturn {
 
             setUser(response.user);
 
+
+            console.log(
+                "Login Done"
+            );
+
             return response;
         } catch (err) {
             const message = err instanceof Error ? err.message : "Login Failed";
@@ -93,5 +97,12 @@ export function useAuth(): UseAuthReturn {
         login,
         error,
         loading,
+        emailError,
+        passwordError,
+        email,
+        password,
+        setEmail,
+        setPassword,
+        handleLogin,
     }
 };
