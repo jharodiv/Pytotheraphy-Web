@@ -3,6 +3,6 @@ export const API_ROUTES = {
         ADMIN_LOGIN: "/api/v1/auth/admin/login"
     },
     DASHBOARD: {
-        GET_DASHBOARD: "/api/v1/dashboard/stats"
+        GET_DASHBOARD: "/api/v1/admin/dashboard/stats"
     }
 }

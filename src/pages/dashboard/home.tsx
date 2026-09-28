@@ -33,28 +33,28 @@ export default function Home() {
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <StatCard
                     title="Total Plants"
-                    value={stats.totalPlants.toLocaleString()}
+                    value={stats.totalPlants?.toLocaleString() ?? "0"}
                     description="Plants in database"
                     icon={Leaf}
                 />
 
                 <StatCard
                     title="Verified Plants"
-                    value={stats.verifiedPlants.toLocaleString()}
+                    value={stats.verifiedPlants?.toLocaleString() ?? "0"}
                     description="Verified by admin"
                     icon={ShieldCheck}
                 />
 
                 <StatCard
                     title="Unverified Plants"
-                    value={stats.unverifiedPlants.toLocaleString()}
+                    value={stats.unverifiedPlants?.toLocaleString() ?? "0"}
                     description="Awaiting verification"
                     icon={CheckCircle2}
                 />
 
                 <StatCard
                     title="Total Users"
-                    value={stats.totalUsers.toLocaleString()}
+                    value={stats.totalUsers?.toLocaleString() ?? "0"}
                     description="Registered users"
                     icon={Users}
                 />
