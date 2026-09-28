@@ -41,52 +41,15 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
 export async function getUserPerMonth(): Promise<UserMonthlyCount[]> {
     try {
-        const usersRef = collection(db, USERS_COLLECTION);
 
-        const currentYear = new Date().getFullYear();
+        const response = await apiRequest<UserMonthlyCount[]>(
+            API_ROUTES.DASHBOARD.GET_USER_PER_MONTH,
+            {
+                method: "GET",
+            }
+        );
 
-        const monthQueries = Array.from({ length: 12 }, (_, month) => {
-            const startDate = new Date(
-                currentYear,
-                month,
-                1
-            );
-
-            const endDate = new Date(
-                currentYear,
-                month + 1,
-                1
-            );
-
-            return getCountFromServer(
-                query(
-                    usersRef,
-                    where(
-                        "created_at",
-                        ">=",
-                        Timestamp.fromDate(startDate)
-                    ),
-                    where(
-                        "created_at",
-                        "<",
-                        Timestamp.fromDate(endDate)
-                    )
-                )
-            );
-        });
-
-        const snapshot = await Promise.all(monthQueries);
-
-        return snapshot.map((snapshot, index) => ({
-            month: new Date(
-                currentYear,
-                index,
-                1
-            ).toLocaleString("en-US", {
-                month: "short",
-            }),
-            count: snapshot.data().count,
-        }));
+        return response;
 
     } catch (error) {
         console.error(
