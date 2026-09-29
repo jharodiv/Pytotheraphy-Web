@@ -1,17 +1,6 @@
-import { db } from "@service/database/firebase";
-import {
-    collection,
-    getCountFromServer,
-    query,
-    where,
-    Timestamp
-} from "firebase/firestore";
-
 import { type DashboardStats, type UserMonthlyCount } from "@model/dashboard/dashboard.model";
 import { API_ROUTES } from "@constant/api/api-routes";
 import { apiRequest } from "@service/api/api";
-
-const USERS_COLLECTION = "users";
 
 // GET THE COUNT OF THE TOTAL PLANTS, VERIFIED PLANTS,
 // UNVERIFIED PLANTS, AND TOTAL USERS USING FIRESTORE
