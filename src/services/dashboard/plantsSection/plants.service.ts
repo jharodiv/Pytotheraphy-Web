@@ -14,6 +14,8 @@ import {
 import { db } from "@service/database/firebase";
 
 import type { PlantModel } from "@model/dashboard/plants.model";
+import { apiRequest } from "@service/api/api";
+import { API_ROUTES } from "@constant/api/api-routes";
 
 const PLANT_COLLECTION = "plants";
 const PLANT_CACHE_COLLECTION = "plant_cache";
@@ -36,10 +38,16 @@ function mapPlant(
  */
 export async function getVerifiedPlant(): Promise<PlantModel[]> {
     try {
-        const plantsRef = collection(db, PLANT_COLLECTION);
-        const snapshot = await getDocs(plantsRef);
 
-        return snapshot.docs.map(mapPlant);
+        const response = await apiRequest<PlantModel[]>(
+            API_ROUTES.PLANTS.GET_VERIFIED_PLANTS,
+            {
+                method: "GET",
+            }
+        );
+
+        return response;
+
     } catch (error) {
         console.error(
             "Failed to fetch verified plants",
@@ -58,19 +66,24 @@ export async function getVerifiedPlant(): Promise<PlantModel[]> {
 
 export async function getUnverifiedPlant(): Promise<PlantModel[]> {
     try {
-        const plantCacheRef = collection(db, PLANT_CACHE_COLLECTION);
 
-        const snapshot = await getDocs(plantCacheRef);
+        const response = await apiRequest<PlantModel[]>(
+            API_ROUTES.PLANTS.GET_UNVERIFIED_PLANTS,
+            {
+                method: "GET",
+            }
+        );
 
-        return snapshot.docs.map(mapPlant);
+        return response;
+
     } catch (error) {
         console.error(
-            "Failed to fetch unverified plants:",
+            "Failed to fetch unverified plants",
             error
         );
 
         throw new Error(
-            "Unable to load unverified plants"
+            "Unable to load verified plants"
         );
     }
 }
@@ -177,8 +190,8 @@ export async function updatePlant(
     plant: Partial<Omit<PlantModel, "id">>
 ): Promise<void> {
     try {
-        const plantRef = doc(db,PLANT_COLLECTION,id);
-        const cacheRef = doc(db,PLANT_CACHE_COLLECTION,id);
+        const plantRef = doc(db, PLANT_COLLECTION, id);
+        const cacheRef = doc(db, PLANT_CACHE_COLLECTION, id);
 
         const [plantSnapshot, cacheSnapshot] = await Promise.all([
             getDoc(plantRef),

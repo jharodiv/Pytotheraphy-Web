@@ -5,5 +5,9 @@ export const API_ROUTES = {
     DASHBOARD: {
         GET_DASHBOARD: "/api/v1/admin/dashboard/stats",
         GET_USER_PER_MONTH: "/api/v1/admin/dashboard/user-per-month"
+    },
+    PLANTS: {
+        GET_VERIFIED_PLANTS: "/api/v1/admin/plants/getPlants",
+        GET_UNVERIFIED_PLANTS: "/api/v1/admin/plants/getCachePlants"
     }
-}
+}    
