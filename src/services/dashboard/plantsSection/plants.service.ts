@@ -16,6 +16,7 @@ import { db } from "@service/database/firebase";
 import type { PlantModel } from "@model/dashboard/plants.model";
 import { apiRequest } from "@service/api/api";
 import { API_ROUTES } from "@constant/api/api-routes";
+import type { PlantReponse } from "@type/dashboard/plant.types";
 
 const PLANT_COLLECTION = "plants";
 const PLANT_CACHE_COLLECTION = "plant_cache";
@@ -39,14 +40,14 @@ function mapPlant(
 export async function getVerifiedPlant(): Promise<PlantModel[]> {
     try {
 
-        const response = await apiRequest<PlantModel[]>(
+        const response = await apiRequest<PlantReponse>(
             API_ROUTES.PLANTS.GET_VERIFIED_PLANTS,
             {
                 method: "GET",
             }
         );
 
-        return response;
+        return response.data;
 
     } catch (error) {
         console.error(
@@ -67,14 +68,14 @@ export async function getVerifiedPlant(): Promise<PlantModel[]> {
 export async function getUnverifiedPlant(): Promise<PlantModel[]> {
     try {
 
-        const response = await apiRequest<PlantModel[]>(
+        const response = await apiRequest<PlantReponse>(
             API_ROUTES.PLANTS.GET_UNVERIFIED_PLANTS,
             {
                 method: "GET",
             }
         );
 
-        return response;
+        return response.data;
 
     } catch (error) {
         console.error(
@@ -154,7 +155,7 @@ export async function getPlantById(
 export async function addPlant(plant: Omit<PlantModel, "id">): Promise<PlantModel> {
     try {
 
-        const collectionName = plant.verified
+        const collectionName = plant.verification
             ? PLANT_COLLECTION
             : PLANT_CACHE_COLLECTION;
 

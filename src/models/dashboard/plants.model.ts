@@ -10,7 +10,7 @@ export type PlantModel = {
     preparation_method: string;
     origin: string;
     side_effect: string;
-    verified: boolean;
+    verification: boolean;
 
     imageUrl: string;
     categories: string[];

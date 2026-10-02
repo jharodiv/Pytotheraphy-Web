@@ -86,7 +86,7 @@ export function usePlants(): UsePlantsReturn {
         medicinalProperties: [],
         categories: [],
         imageUrl: "",
-        verified: false,
+        verification: false,
     });
 
     const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -139,9 +139,9 @@ export function usePlants(): UsePlantsReturn {
             const matchesFilter =
                 filter === "all" ||
                 (filter === "verified" &&
-                    plant.verified === true) ||
+                    plant.verification === true) ||
                 (filter === "unverified" &&
-                    plant.verified === false);
+                    plant.verification === false);
 
             return (
                 matchesSearch &&
@@ -248,7 +248,7 @@ export function usePlants(): UsePlantsReturn {
             medicinalProperties: [],
             categories: [],
             imageUrl: "",
-            verified: false,
+            verification: false,
         });
 
         setCreateModalOpen(true);
@@ -613,14 +613,14 @@ export function usePlants(): UsePlantsReturn {
 
             const {
                 id,
-                verified,
+                verification,
                 ...plantData
             } = editForm;
 
             await updatePlant(id, plantData);
 
-            if (verified !== originalPlant?.verified) {
-                if (verified) {
+            if (verification !== originalPlant?.verification) {
+                if (verification) {
                     await handleVerify(id);
                 } else {
                     await handleUnverify(id);
@@ -634,7 +634,7 @@ export function usePlants(): UsePlantsReturn {
                         ? {
                             ...plant,
                             ...plantData,
-                            verified,
+                            verification,
                         }
                         : plant
                 )

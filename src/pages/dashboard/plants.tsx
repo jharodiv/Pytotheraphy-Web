@@ -338,12 +338,12 @@ export default function Plants() {
                                                 </div>
 
                                                 <span
-                                                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${plant.verified
+                                                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${plant.verification
                                                         ? "bg-[#edf4eb] text-[#486344]"
                                                         : "bg-[#f3f3f0] text-[#7b847a]"
                                                         }`}
                                                 >
-                                                    {plant.verified
+                                                    {plant.verification
                                                         ? "Verified"
                                                         : "Unverified"}
                                                 </span>

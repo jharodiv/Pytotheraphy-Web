@@ -195,4 +195,9 @@ export interface CreatePlantModalProps {
     onSave: () => Promise<void>;
 }
 
+export interface PlantReponse {
+    data: PlantModel[],
+    message: string
+}
+
 
