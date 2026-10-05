@@ -40,7 +40,7 @@ export interface UsePlantsReturn {
 
     fetchPlantById: (
         id: string
-    ) => Promise<PlantModel | null>;
+    ) => Promise<PlantResponse | null>;
 
     createPlant: (
         plant: Omit<PlantModel, "id">
@@ -195,7 +195,7 @@ export interface CreatePlantModalProps {
     onSave: () => Promise<void>;
 }
 
-export interface PlantReponse {
+export interface PlantResponse {
     data: PlantModel[],
     message: string
 }

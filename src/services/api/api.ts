@@ -1,4 +1,4 @@
-import { API_URL } from "src/config/api";
+import { API_URL } from "@config/api";
 
 
 export async function apiRequest<T>(
@@ -20,6 +20,9 @@ export async function apiRequest<T>(
     const data = await response.json();
 
     if (!response.ok) {
+        console.log("API Error:", data);
+        console.log("Validation errors:", data.errors);
+        
         throw new Error(
             data.message || "Something went wrong"
         );

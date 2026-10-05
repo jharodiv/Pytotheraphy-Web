@@ -80,10 +80,9 @@ export function usePlants(): UsePlantsReturn {
         family: "",
         description: "",
         uses: "",
-        preparation_method: "",
+        preparationMethod: "",
         origin: "",
-        side_effect: "",
-        medicinalProperties: [],
+        sideEffect: "",
         categories: [],
         imageUrl: "",
         verification: false,
@@ -242,10 +241,9 @@ export function usePlants(): UsePlantsReturn {
             family: "",
             description: "",
             uses: "",
-            preparation_method: "",
+            preparationMethod: "",
             origin: "",
-            side_effect: "",
-            medicinalProperties: [],
+            sideEffect: "",
             categories: [],
             imageUrl: "",
             verification: false,
@@ -381,14 +379,6 @@ export function usePlants(): UsePlantsReturn {
             const clonedPlant: PlantModel = {
                 ...plant,
 
-                medicinalProperties:
-                    Array.isArray(
-                        plant.medicinalProperties
-                    )
-                        ? [
-                            ...plant.medicinalProperties,
-                        ]
-                        : [],
 
                 categories:
                     Array.isArray(
@@ -405,10 +395,6 @@ export function usePlants(): UsePlantsReturn {
             // Create the editable form
             setEditForm({
                 ...clonedPlant,
-
-                medicinalProperties: [
-                    ...clonedPlant.medicinalProperties,
-                ],
 
                 categories: [
                     ...clonedPlant.categories,

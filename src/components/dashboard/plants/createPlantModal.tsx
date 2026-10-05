@@ -198,11 +198,11 @@ export default function CreatePlantModal({
 
                             <textarea
                                 value={
-                                    plant.preparation_method
+                                    plant.preparationMethod
                                 }
                                 onChange={(event) =>
                                     onChange(
-                                        "preparation_method",
+                                        "preparationMethod",
                                         event.target.value
                                     )
                                 }
@@ -220,10 +220,10 @@ export default function CreatePlantModal({
                             </label>
 
                             <textarea
-                                value={plant.side_effect}
+                                value={plant.sideEffect}
                                 onChange={(event) =>
                                     onChange(
-                                        "side_effect",
+                                        "sideEffect",
                                         event.target.value
                                     )
                                 }
@@ -239,33 +239,6 @@ export default function CreatePlantModal({
                             <label className="mb-2 block text-xs font-medium text-[#596257]">
                                 Medicinal Properties
                             </label>
-
-                            <input
-                                type="text"
-                                value={
-                                    Array.isArray(
-                                        plant.medicinalProperties
-                                    )
-                                        ? plant.medicinalProperties.join(
-                                            ", "
-                                        )
-                                        : ""
-                                }
-                                onChange={(event) =>
-                                    onChange(
-                                        "medicinalProperties",
-                                        event.target.value
-                                            .split(",")
-                                            .map(
-                                                (item) =>
-                                                    item.trim()
-                                            )
-                                            .filter(Boolean)
-                                    )
-                                }
-                                placeholder="e.g. Anti-inflammatory, Antioxidant"
-                                className="w-full rounded-lg border border-[#dfe4dc] bg-white px-3 py-2.5 text-sm text-[#263126] outline-none transition focus:border-[#486344] focus:ring-1 focus:ring-[#486344]"
-                            />
 
                             <p className="mt-1.5 text-xs text-[#7b847a]">
                                 Separate properties with commas.
@@ -341,12 +314,12 @@ export default function CreatePlantModal({
 
                             <div className="flex items-center justify-between rounded-lg border border-[#dfe4dc] bg-[#fafbf9] px-4 py-3">
                                 <span
-                                    className={`rounded-full px-3 py-1 text-xs font-medium ${plant.verified
+                                    className={`rounded-full px-3 py-1 text-xs font-medium ${plant.verification
                                         ? "bg-[#edf4eb] text-[#486344]"
                                         : "bg-[#f3f3f0] text-[#7b847a]"
                                         }`}
                                 >
-                                    {plant.verified
+                                    {plant.verification
                                         ? "Verified"
                                         : "Unverified"}
                                 </span>
@@ -355,8 +328,8 @@ export default function CreatePlantModal({
                                     type="button"
                                     onClick={() =>
                                         onChange(
-                                            "verified",
-                                            !plant.verified
+                                            "verification",
+                                            !plant.verification
                                         )
                                     }
                                     className="cursor-pointer rounded-lg bg-[#486344] px-3 py-1.5 text-xs font-medium text-white"

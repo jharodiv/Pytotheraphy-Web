@@ -1,14 +1,9 @@
 import {
-    addDoc,
-    collection,
     deleteDoc,
     doc,
     getDoc,
-    getDocs,
     updateDoc,
     runTransaction,
-    type DocumentData,
-    type QueryDocumentSnapshot,
 } from "firebase/firestore";
 
 import { db } from "@service/database/firebase";
@@ -16,23 +11,10 @@ import { db } from "@service/database/firebase";
 import type { PlantModel } from "@model/dashboard/plants.model";
 import { apiRequest } from "@service/api/api";
 import { API_ROUTES } from "@constant/api/api-routes";
-import type { PlantReponse } from "@type/dashboard/plant.types";
+import type { PlantResponse } from "@type/dashboard/plant.types";
 
 const PLANT_COLLECTION = "plants";
 const PLANT_CACHE_COLLECTION = "plant_cache";
-
-/**
- * Convert a Firestore document into a PlantModel.
- */
-
-function mapPlant(
-    snapshot: QueryDocumentSnapshot<DocumentData>
-): PlantModel {
-    return {
-        id: snapshot.id,
-        ...snapshot.data(),
-    } as PlantModel;
-}
 
 /**
  * Get all verified plants from the plants collection.
@@ -40,7 +22,7 @@ function mapPlant(
 export async function getVerifiedPlant(): Promise<PlantModel[]> {
     try {
 
-        const response = await apiRequest<PlantReponse>(
+        const response = await apiRequest<PlantResponse>(
             API_ROUTES.PLANTS.GET_VERIFIED_PLANTS,
             {
                 method: "GET",
@@ -68,7 +50,7 @@ export async function getVerifiedPlant(): Promise<PlantModel[]> {
 export async function getUnverifiedPlant(): Promise<PlantModel[]> {
     try {
 
-        const response = await apiRequest<PlantReponse>(
+        const response = await apiRequest<PlantResponse>(
             API_ROUTES.PLANTS.GET_UNVERIFIED_PLANTS,
             {
                 method: "GET",
@@ -122,20 +104,16 @@ export async function getPlants(): Promise<PlantModel[]> {
 
 export async function getPlantById(
     id: string
-): Promise<PlantModel | null> {
+): Promise<PlantResponse | null> {
     try {
-        const plantRef = doc(db, PLANT_COLLECTION, id);
+        const response = await apiRequest<PlantResponse>(
+            API_ROUTES.PLANTS.GET_PLANT_BY_ID(id),
+            {
+                method: "GET",
+            }
+        );
 
-        const snapshot = await getDoc(plantRef);
-
-        if (!snapshot.exists()) {
-            return null;
-        }
-
-        return {
-            id: snapshot.id,
-            ...snapshot.data(),
-        } as PlantModel;
+        return response;
     } catch (error) {
         console.error(
             `Failed to fetch plant with ID ${id}:`,
@@ -143,7 +121,7 @@ export async function getPlantById(
         );
 
         throw new Error(
-            "Unable to load plants"
+            "Unable to load plant"
         );
     }
 }
@@ -155,21 +133,16 @@ export async function getPlantById(
 export async function addPlant(plant: Omit<PlantModel, "id">): Promise<PlantModel> {
     try {
 
-        const collectionName = plant.verification
-            ? PLANT_COLLECTION
-            : PLANT_CACHE_COLLECTION;
-
-        const plantRef = collection(db, collectionName);
-
-        const document = await addDoc(
-            plantRef,
-            plant
+        const response = await apiRequest<PlantModel>(
+            API_ROUTES.PLANTS.CREATE_PLANT,
+            {
+                method: "POST",
+                body: JSON.stringify(plant),
+            }
         );
 
-        return {
-            id: document.id,
-            ...plant,
-        };
+        return response;
+        
     } catch (error) {
         console.error(
             " Failed to add plant",

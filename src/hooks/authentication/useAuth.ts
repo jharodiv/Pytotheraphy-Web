@@ -67,7 +67,7 @@ export function useAuth(): UseAuthReturn {
             setEmailError(validation.email ?? "");
             setPasswordError(validation.password ?? "");
 
-            return
+            throw new Error ("Validation failed");
         }
 
         try {
@@ -79,12 +79,15 @@ export function useAuth(): UseAuthReturn {
 
             navigate('/dashboard');
 
+            return response;
+
         } catch (err) {
             const message = err instanceof Error ? err.message : "Login Failed";
 
             setError(message);
 
-            return undefined;
+            throw err;
+
         } finally {
             setLoading(false);
         }

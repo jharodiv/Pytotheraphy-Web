@@ -24,10 +24,12 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
     "paths": {
       "@service/*": [
         "./src/services/*"
+      ],
+      "@config/*": [
+        "./src/config/*"
       ],
       "@errors/*": [
         "./src/errors/*"

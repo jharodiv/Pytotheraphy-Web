@@ -8,6 +8,8 @@ export const API_ROUTES = {
     },
     PLANTS: {
         GET_VERIFIED_PLANTS: "/api/v1/admin/plants/getPlants",
-        GET_UNVERIFIED_PLANTS: "/api/v1/admin/plants/getCachePlants"
+        GET_UNVERIFIED_PLANTS: "/api/v1/admin/plants/getCachePlants",
+        GET_PLANT_BY_ID: (plantId: string) => `/api/v1/admin/plants/getPlant/${plantId}`,
+        CREATE_PLANT: "/api/v1/admin/plants/create",
     }
-}    
+}
