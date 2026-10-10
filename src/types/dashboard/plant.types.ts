@@ -200,4 +200,9 @@ export interface PlantResponse {
     message: string
 }
 
+export interface CreatePlantResponse {
+    data: PlantModel,
+    message: string
+}
+
 

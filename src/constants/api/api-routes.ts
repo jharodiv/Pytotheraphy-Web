@@ -11,5 +11,6 @@ export const API_ROUTES = {
         GET_UNVERIFIED_PLANTS: "/api/v1/admin/plants/getCachePlants",
         GET_PLANT_BY_ID: (plantId: string) => `/api/v1/admin/plants/getPlant/${plantId}`,
         CREATE_PLANT: "/api/v1/admin/plants/create",
+        DELETE_PLANT: (plantId: string) => `/api/v1/admin/plants/delete/${plantId}`,
     }
 }

@@ -101,7 +101,7 @@ export function usePlants(): UsePlantsReturn {
 
             const data = await getPlants();
 
-            setPlants(data);
+            setPlants(data);    
         } catch (error) {
             console.error(
                 "Failed to fetch plants:",

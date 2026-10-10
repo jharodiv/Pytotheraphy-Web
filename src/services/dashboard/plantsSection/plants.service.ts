@@ -11,7 +11,7 @@ import { db } from "@service/database/firebase";
 import type { PlantModel } from "@model/dashboard/plants.model";
 import { apiRequest } from "@service/api/api";
 import { API_ROUTES } from "@constant/api/api-routes";
-import type { PlantResponse } from "@type/dashboard/plant.types";
+import type { PlantResponse, CreatePlantResponse } from "@type/dashboard/plant.types";
 
 const PLANT_COLLECTION = "plants";
 const PLANT_CACHE_COLLECTION = "plant_cache";
@@ -130,10 +130,11 @@ export async function getPlantById(
  * Add a new verified plant.
  */
 
-export async function addPlant(plant: Omit<PlantModel, "id">): Promise<PlantModel> {
+export async function addPlant(
+    plant: Omit<PlantModel, "id">
+): Promise<PlantModel> {
     try {
-
-        const response = await apiRequest<PlantModel>(
+        const response = await apiRequest<CreatePlantResponse>(
             API_ROUTES.PLANTS.CREATE_PLANT,
             {
                 method: "POST",
@@ -141,17 +142,11 @@ export async function addPlant(plant: Omit<PlantModel, "id">): Promise<PlantMode
             }
         );
 
-        return response;
-        
+        return response.data;
     } catch (error) {
-        console.error(
-            " Failed to add plant",
-            error
-        );
+        console.error("Failed to add plant", error);
 
-        throw new Error(
-            " Unable to add Plant"
-        );
+        throw new Error("Unable to add plant");
     }
 }
 
@@ -206,30 +201,13 @@ export async function deletePlant(
     id: string,
 ): Promise<void> {
     try {
-        const plantRef = doc(db, PLANT_COLLECTION, id);
-        const cacheRef = doc(db, PLANT_CACHE_COLLECTION, id);
-
-        // check verified plants
-
-        const plantSnapshot = await getDoc(plantRef);
-
-        if (plantSnapshot.exists()) {
-            await deleteDoc(plantRef);
-
-            return;
-        }
-
-        const cacheSnapshot = await getDoc(cacheRef);
-
-        if (cacheSnapshot.exists()) {
-            await deleteDoc(cacheRef);
-
-            return;
-        }
-
-        throw new Error(
-            `Plant with ID ${id} does not exist.`
+        const response = await apiRequest<void>(
+            API_ROUTES.PLANTS.DELETE_PLANT(id),
+            {
+                method: "DELETE",
+            }
         );
+        return response;
     } catch (error) {
         console.error(
             "Failed to delete the plant"
