@@ -112,14 +112,6 @@ export interface UsePlantsReturn {
         value: PlantModel[K]
     ) => void;
 
-    // Verification
-    handleVerify: (
-        id: string
-    ) => Promise<void>;
-    handleUnverify: (
-        id: string
-    ) => Promise<void>;
-
     // Save Entire Plant
 
     saveEdit: () => Promise<void>;

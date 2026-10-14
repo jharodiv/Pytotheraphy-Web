@@ -159,28 +159,15 @@ export async function updatePlant(
     plant: Partial<Omit<PlantModel, "id">>
 ): Promise<void> {
     try {
-        const plantRef = doc(db, PLANT_COLLECTION, id);
-        const cacheRef = doc(db, PLANT_CACHE_COLLECTION, id);
-
-        const [plantSnapshot, cacheSnapshot] = await Promise.all([
-            getDoc(plantRef),
-            getDoc(cacheRef)
-        ])
-
-        if (plantSnapshot.exists()) {
-            await updateDoc(plantRef, plant);
-            return;
-        }
-
-        if (cacheSnapshot.exists()) {
-            await updateDoc(cacheRef, plant);
-            return;
-        }
-
-        throw new Error(
-            `Plant with ID ${id} does not exist`
+        const response = await apiRequest<void>(
+            API_ROUTES.PLANTS.UPDATE_PLANT(id),
+            {
+                method: "PUT",
+                body: JSON.stringify(plant),
+            }
         );
 
+        return response;
     } catch (error) {
         console.error(
             `Failed to update plant with ID ${id}:`,
@@ -218,70 +205,3 @@ export async function deletePlant(
         );
     }
 }
-
-export async function verifyPlant(
-    id: string
-): Promise<void> {
-    try {
-        const plantRef = doc(db, PLANT_COLLECTION, id);
-        const cacheRef = doc(db, PLANT_CACHE_COLLECTION, id);
-
-        await runTransaction(db, async (transaction) => {
-            const cacheSnapshot = await transaction.get(cacheRef);
-
-            if (!cacheSnapshot.exists()) {
-                throw new Error("Plant not found in plant cache");
-            }
-
-            const plantData = cacheSnapshot.data();
-
-            transaction.set(plantRef, {
-                ...plantData,
-                verified: true
-            });
-
-
-            transaction.delete(cacheRef);
-        })
-    } catch (error) {
-        console.error(
-            "Failed to verify plant",
-        );
-
-        throw new Error("Unable to verify plant");
-    }
-}
-
-export async function unverifyPlant(
-    id: string
-): Promise<void> {
-    try {
-        const plantRef = doc(db, PLANT_COLLECTION, id);
-        const cacheRef = doc(db, PLANT_CACHE_COLLECTION, id);
-
-        await runTransaction(db, async (transaction) => {
-            const plantSnapshot = await transaction.get(plantRef);
-
-            if (!plantSnapshot.exists()) {
-                throw new Error("Plant not found in verified plants")
-            }
-
-            const plantData = plantSnapshot.data();
-
-            transaction.set(cacheRef, {
-                ...plantData,
-                verified: false
-            });
-
-            transaction.delete(plantRef);
-        })
-    } catch (error) {
-        console.error(
-            "Failed to unverify the plant"
-        )
-
-        throw new Error(
-            "Unable to unverify the plant"
-        )
-    }
-} 

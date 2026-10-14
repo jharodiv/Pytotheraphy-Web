@@ -10,9 +10,7 @@ import {
     deletePlant,
     getPlantById,
     getPlants,
-    unverifyPlant,
     updatePlant,
-    verifyPlant,
 } from "@service/dashboard/plantsSection/plants.service";
 
 import type { PlantModel } from "@model/dashboard/plants.model";
@@ -495,49 +493,6 @@ export function usePlants(): UsePlantsReturn {
         [originalPlant]
     );
 
-    const handleVerify = useCallback(async (id: string) => {
-        try {
-            setError(null);
-
-            await verifyPlant(id);
-        } catch (error) {
-            console.error(
-                "Failed to verify the plant",
-                error
-            );
-
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Unable to verify plant"
-            );
-
-            throw error;
-        }
-    }, []);
-
-    const handleUnverify = useCallback(async (id: string) => {
-        try {
-            setError(null);
-
-            await unverifyPlant(id);
-        } catch (error) {
-            console.error(
-                "Failed to unverify the plant",
-                error
-            );
-
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Unable to unverify plant."
-            );
-
-            throw error;
-        }
-    }, []);
-
-
     // Save Individual Field Edit
 
     const saveEditField = useCallback(
@@ -551,7 +506,7 @@ export function usePlants(): UsePlantsReturn {
                 return next;
             });
         },
-        [editForm, handleVerify, handleUnverify]
+        [editForm]
     );
 
     // Clear Individual Field Edit
@@ -605,14 +560,6 @@ export function usePlants(): UsePlantsReturn {
 
             await updatePlant(id, plantData);
 
-            if (verification !== originalPlant?.verification) {
-                if (verification) {
-                    await handleVerify(id);
-                } else {
-                    await handleUnverify(id);
-                }
-            }
-
             // Update local list
             setPlants((current) =>
                 current.map((plant) =>
@@ -645,7 +592,7 @@ export function usePlants(): UsePlantsReturn {
         } finally {
             setSaving(false);
         }
-    }, [editForm, handleVerify, handleUnverify]);
+    }, [editForm]);
 
     useEffect(() => {
         fetchPlants();
@@ -701,10 +648,6 @@ export function usePlants(): UsePlantsReturn {
 
         saveEditField,
         clearFieldEdit,
-
-        //Verifying Plant
-        handleVerify,
-        handleUnverify,
 
         // Save entire plant
         saveEdit,

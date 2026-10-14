@@ -284,125 +284,7 @@ export default function EditPlantModal({
                                 )
                             }
                         />
-
-                        {/* Preparation Method                                  */}
-
-                        <EditableTextarea
-                            label="Preparation Method"
-                            value={
-                                plant.preparation_method
-                            }
-                            editing={isEditing(
-                                "preparation_method"
-                            )}
-                            changed={isChanged(
-                                "preparation_method"
-                            )}
-                            onEdit={() =>
-                                onEditField(
-                                    "preparation_method"
-                                )
-                            }
-                            onSave={() =>
-                                onSaveField(
-                                    "preparation_method"
-                                )
-                            }
-                            onChange={(value) =>
-                                onChangeField(
-                                    "preparation_method",
-                                    value
-                                )
-                            }
-                            onClear={() =>
-                                onClearField(
-                                    "preparation_method"
-                                )
-                            }
-                        />
-
-                        {/* Side Effects                                        */}
-
-                        <EditableTextarea
-                            label="Side Effects"
-                            value={plant.side_effect}
-                            editing={isEditing(
-                                "side_effect"
-                            )}
-                            changed={isChanged(
-                                "side_effect"
-                            )}
-                            onEdit={() =>
-                                onEditField(
-                                    "side_effect"
-                                )
-                            }
-                            onSave={() =>
-                                onSaveField(
-                                    "side_effect"
-                                )
-                            }
-                            onChange={(value) =>
-                                onChangeField(
-                                    "side_effect",
-                                    value
-                                )
-                            }
-                            onClear={() =>
-                                onClearField(
-                                    "side_effect"
-                                )
-                            }
-                        />
-
-                        {/* Medicinal Properties                                */}
-
-                        <EditableTextarea
-                            label="Medicinal Properties"
-                            value={
-                                Array.isArray(
-                                    plant.medicinalProperties
-                                )
-                                    ? plant.medicinalProperties.join(
-                                        ", "
-                                    )
-                                    : ""
-                            }
-                            editing={isEditing(
-                                "medicinalProperties"
-                            )}
-                            changed={isChanged(
-                                "medicinalProperties"
-                            )}
-                            onEdit={() =>
-                                onEditField(
-                                    "medicinalProperties"
-                                )
-                            }
-                            onSave={() =>
-                                onSaveField(
-                                    "medicinalProperties"
-                                )
-                            }
-                            onChange={(value) =>
-                                onChangeField(
-                                    "medicinalProperties",
-                                    value
-                                        .split(",")
-                                        .map((item) =>
-                                            item.trim()
-                                        )
-                                        .filter(Boolean)
-                                )
-                            }
-                            onClear={() =>
-                                onClearField(
-                                    "medicinalProperties"
-                                )
-                            }
-                            placeholder="Separate properties with commas"
-                        />
-
+                        
                         {/* Categories                                          */}
 
                         <EditableTextarea
@@ -494,16 +376,16 @@ export default function EditPlantModal({
                                 </label>
 
                                 {!isEditing(
-                                    "verified"
+                                    "verification"
                                 ) &&
                                     !isChanged(
-                                        "verified"
+                                        "verification"
                                     ) && (
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 onEditField(
-                                                    "verified"
+                                                    "verification"
                                                 )
                                             }
                                             className="flex cursor-pointer items-center gap-1 text-xs font-medium text-[#486344]"
@@ -513,16 +395,16 @@ export default function EditPlantModal({
                                     )}
 
                                 {!isEditing(
-                                    "verified"
+                                    "verification"
                                 ) &&
                                     isChanged(
-                                        "verified"
+                                        "verification"
                                     ) && (
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 onClearField(
-                                                    "verified"
+                                                    "verification"
                                                 )
                                             }
                                             className="text-xs font-medium text-[#7b847a] hover:text-[#c65353]"
@@ -532,13 +414,13 @@ export default function EditPlantModal({
                                     )}
 
                                 {isEditing(
-                                    "verified"
+                                    "verification"
                                 ) && (
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 onSaveField(
-                                                    "verified"
+                                                    "verification"
                                                 )
                                             }
                                             className="rounded-md bg-[#486344] px-2.5 py-1 text-xs font-medium text-white"
@@ -550,25 +432,25 @@ export default function EditPlantModal({
 
                             <div className="flex items-center justify-between rounded-lg border border-[#dfe4dc] bg-[#fafbf9] px-4 py-3">
                                 <span
-                                    className={`rounded-full px-3 py-1 text-xs font-medium ${plant.verified
+                                    className={`rounded-full px-3 py-1 text-xs font-medium ${plant.verification
                                             ? "bg-[#edf4eb] text-[#486344]"
                                             : "bg-[#f3f3f0] text-[#7b847a]"
                                         }`}
                                 >
-                                    {plant.verified
+                                    {plant.verification
                                         ? "Verified"
                                         : "Unverified"}
                                 </span>
 
                                 {isEditing(
-                                    "verified"
+                                    "verification"
                                 ) && (
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 onChangeField(
-                                                    "verified",
-                                                    !plant.verified
+                                                    "verification",
+                                                    !plant.verification
                                                 )
                                             }
                                             className="cursor-pointer rounded-lg bg-[#486344] px-3 py-1.5 text-xs font-medium text-white"
