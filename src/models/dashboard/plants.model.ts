@@ -1,3 +1,8 @@
+export type PlantCategory = {
+    id: string;
+    name: string;
+}
+
 export type PlantModel = {
     id: string;
 
@@ -12,5 +17,5 @@ export type PlantModel = {
     verification: boolean;
 
     imageUrl: string;
-    categories: string[];
+    categories: PlantCategory[];
 }

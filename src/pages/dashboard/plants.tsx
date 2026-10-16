@@ -55,7 +55,9 @@ export default function Plants() {
         updateEditField,
 
         saveEdit,
-        handleRemovePlantClick
+        handleRemovePlantClick,
+
+        categoryOptions,
     } = usePlants();
 
     const filterLabel = {
@@ -363,6 +365,10 @@ export default function Plants() {
                     <EditPlantModal
                         plant={editForm}
 
+                        categoryOptions={
+                            categoryOptions
+                        }
+
                         editingFields={
                             editingFields
                         }
@@ -400,6 +406,7 @@ export default function Plants() {
             {createModalOpen && (
                 <CreatePlantModal
                     plant={createForm}
+                    categoryOptions={categoryOptions}
                     saving={saving}
                     onClose={closeCreateModal}
                     onChange={updateCreateField}

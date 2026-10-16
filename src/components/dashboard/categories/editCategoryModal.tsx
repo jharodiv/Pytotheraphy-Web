@@ -10,33 +10,47 @@ export default function EditCategoryModal({
     category,
 }: EditCategoryModalProps) {
 
-    const [label, setLabel] = useState("");
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (isOpen) {
-            setLabel(category.label);
+        if (isOpen && category) {
+            setName(category.name);
+            setDescription(category.description ?? "");
+            setError(null);
         }
     }, [isOpen, category]);
 
-    if (!isOpen) {
+    if (!isOpen || !category) {
         return null;
     }
 
     const handleEdit = async () => {
-        if (!label.trim()) {
+        if (!name.trim()) {
             return;
         }
 
-        await onEdit(
-            category.id,
-            label.trim());
+        try {
+            setError(null);
 
-        setLabel("");
-        onClose();
+            await onEdit(
+                category.id,
+                name.trim(),
+                description.trim()
+            );
+
+            onClose();
+        } catch (error) {
+            setError(error instanceof Error ? error.message : "Unable to update category");
+        }
     };
 
     const handleClose = () => {
-        setLabel("");
+        if (isEditing) {
+            return;
+        }
+
         onClose();
     };
 
@@ -54,7 +68,7 @@ export default function EditCategoryModal({
                         </h2>
 
                         <p className="mt-1 text-sm text-[#929a91]">
-                            Update the plant category name.
+                            Update the plant category.
                         </p>
                     </div>
 
@@ -68,25 +82,57 @@ export default function EditCategoryModal({
                 </div>
 
                 {/* Form */}
-                <div className="p-5">
+                <div className="space-y-4 p-5">
 
-                    <label
-                        htmlFor="category-label"
-                        className="mb-2 block text-sm font-medium text-[#263126]"
-                    >
-                        Category Name
-                    </label>
+                    <div>
+                        <label
+                            htmlFor="category-name"
+                            className="mb-2 block text-sm font-medium text-[#263126]"
+                        >
+                            Category Name
+                        </label>
 
-                    <input
-                        id="category-label"
-                        type="text"
-                        value={label}
-                        onChange={(event) =>
-                            setLabel(event.target.value)
-                        }
-                        placeholder="e.g. Skin Care"
-                        className="w-full rounded-lg border border-[#e1e5de] bg-white px-3 py-2.5 text-sm text-[#263126] outline-none transition placeholder:text-[#929a91] focus:border-[#486344] focus:ring-2 focus:ring-[#486344]/10"
-                    />
+                        <input
+                            id="category-name"
+                            type="text"
+                            value={name}
+                            maxLength={50}
+                            onChange={(event) =>
+                                setName(event.target.value)
+                            }
+                            placeholder="e.g. Skin Care"
+                            className="w-full rounded-lg border border-[#e1e5de] bg-white px-3 py-2.5 text-sm text-[#263126] outline-none transition placeholder:text-[#929a91] focus:border-[#486344] focus:ring-2 focus:ring-[#486344]/10"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="category-description"
+                            className="mb-2 block text-sm font-medium text-[#263126]"
+                        >
+                            Description{" "}
+                            <span className="font-normal text-[#929a91]">
+                                (optional)
+                            </span>
+                        </label>
+
+                        <textarea
+                            id="category-description"
+                            value={description}
+                            rows={3}
+                            onChange={(event) =>
+                                setDescription(event.target.value)
+                            }
+                            placeholder="What kind of plants belong here?"
+                            className="w-full resize-none rounded-lg border border-[#e1e5de] bg-white px-3 py-2.5 text-sm text-[#263126] outline-none transition placeholder:text-[#929a91] focus:border-[#486344] focus:ring-2 focus:ring-[#486344]/10"
+                        />
+                    </div>
+
+                    {error && (
+                        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+                            {error}
+                        </p>
+                    )}
 
                 </div>
 
@@ -107,7 +153,7 @@ export default function EditCategoryModal({
                         onClick={handleEdit}
                         disabled={
                             isEditing ||
-                            !label.trim()
+                            !name.trim()
                         }
                         className="rounded-lg bg-[#486344] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#3d5739] disabled:cursor-not-allowed disabled:opacity-50"
                     >

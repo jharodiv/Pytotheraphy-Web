@@ -6,6 +6,25 @@ import { API_ROUTES } from "@constant/api/api-routes";
 import type { PlantResponse, CreatePlantResponse } from "@type/dashboard/plant.types";
 
 /**
+ * The API returns categories as { id, name } but expects categoryIds when saving.
+ */
+
+function toPlantPayload(
+    plant: Partial<Omit<PlantModel, "id">>
+) {
+    const { categories, ...plantData } = plant;
+
+    return {
+        ...plantData,
+        ...(categories && {
+            categoryIds: categories.map(
+                (category) => category.id
+            ),
+        }),
+    };
+}
+
+/**
  * Get all verified plants from the plants collection.
  */
 export async function getVerifiedPlant(): Promise<PlantModel[]> {
@@ -127,7 +146,7 @@ export async function addPlant(
             API_ROUTES.PLANTS.CREATE_PLANT,
             {
                 method: "POST",
-                body: JSON.stringify(plant),
+                body: JSON.stringify(toPlantPayload(plant)),
             }
         );
 
@@ -143,31 +162,31 @@ export async function addPlant(
  * Update an existing verified plant.
  */
 
-    export async function updatePlant(
-        id: string,
-        plant: Partial<Omit<PlantModel, "id">>
-    ): Promise<PlantModel> {
-        try {
-            const response = await apiRequest<PlantModel>(
-                API_ROUTES.PLANTS.UPDATE_PLANT(id),
-                {
-                    method: "PUT",
-                    body: JSON.stringify(plant),
-                }
-            );
+export async function updatePlant(
+    id: string,
+    plant: Partial<Omit<PlantModel, "id">>
+): Promise<PlantModel> {
+    try {
+        const response = await apiRequest<CreatePlantResponse>(
+            API_ROUTES.PLANTS.UPDATE_PLANT(id),
+            {
+                method: "PUT",
+                body: JSON.stringify(toPlantPayload(plant)),
+            }
+        );
 
-            return response;    
-        } catch (error) {
-            console.error(
-                `Failed to update plant with ID ${id}:`,
-                error
-            );
+        return response.data;
+    } catch (error) {
+        console.error(
+            `Failed to update plant with ID ${id}:`,
+            error
+        );
 
-            throw new Error(
-                "Unable to update plant."
-            );
-        }
+        throw new Error(
+            "Unable to update plant."
+        );
     }
+}
 
 /**
  * Delete an existing verified plant.

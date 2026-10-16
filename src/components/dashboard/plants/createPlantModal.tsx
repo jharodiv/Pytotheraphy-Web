@@ -1,11 +1,14 @@
 import { Check, X } from "lucide-react";
 
+import CategoryPicker from "@components/dashboard/plants/categoryPicker";
+
 import type {
     CreatePlantModalProps,
 } from "@type/dashboard/plant.types";
 
 export default function CreatePlantModal({
     plant,
+    categoryOptions,
     saving,
     onClose,
     onChange,
@@ -252,36 +255,17 @@ export default function CreatePlantModal({
                                 Categories
                             </label>
 
-                            <input
-                                type="text"
-                                value={
-                                    Array.isArray(
-                                        plant.categories
-                                    )
-                                        ? plant.categories.join(
-                                            ", "
-                                        )
-                                        : ""
-                                }
-                                onChange={(event) =>
+                            <CategoryPicker
+                                options={categoryOptions}
+                                selected={plant.categories}
+                                disabled={saving}
+                                onChange={(categories) =>
                                     onChange(
                                         "categories",
-                                        event.target.value
-                                            .split(",")
-                                            .map(
-                                                (item) =>
-                                                    item.trim()
-                                            )
-                                            .filter(Boolean)
+                                        categories
                                     )
                                 }
-                                placeholder="e.g. Medicinal, Digestive"
-                                className="w-full rounded-lg border border-[#dfe4dc] bg-white px-3 py-2.5 text-sm text-[#263126] outline-none transition focus:border-[#486344] focus:ring-1 focus:ring-[#486344]"
                             />
-
-                            <p className="mt-1.5 text-xs text-[#7b847a]">
-                                Separate categories with commas.
-                            </p>
                         </div>
 
                         {/* Image URL */}

@@ -5,72 +5,42 @@ import CreateCategoryModal from "@components/dashboard/categories/createCategory
 import EditCategoryModal from "@components/dashboard/categories/editCategoryModal";
 import {
     FolderTree,
-    MoreVertical,
+    Pencil,
     Plus,
     Search,
-    Pencil,
-    Trash2,
 } from "lucide-react";
-
-import { useState } from "react";
 
 export default function Categories() {
 
     const {
-        categoriesCount,
-        isSelectedCategory,
-        isCategoryPlantsModalOpen,
-        getCategoryPlantCountsById,
-        isNewCategoryModalOpen,
-        isEditCategoryModalOpen,
-        isCreating,
-        selectedCategory,
-        closeNewCategoryModal,
-        createNewCategory,
-        closeEditCategoryModal,
-        isUpdating,
-        updateCategory,
-        openEditCategoryModal,
-        handleDeleteCategoryClick,
-
+        filteredCategories,
 
         search,
         setSearch,
         loading,
         error,
 
-        //fetchPlantsByCategory,
+        isCategoryPlantsModalOpen,
+        selectedCategoryName,
+        selectedCategoryPlants,
+        loadingCategoryPlants,
+        categoryPlantsError,
         openPlantModal,
         closePlantModal,
+
+        isNewCategoryModalOpen,
+        isCreating,
         openNewCategoryModal,
+        closeNewCategoryModal,
+        createNewCategory,
 
-        filteredCategories,
-
+        isEditCategoryModalOpen,
+        isUpdating,
+        selectedCategory,
+        openEditCategoryModal,
+        closeEditCategoryModal,
+        updateCategory,
     } = useCategories();
-
-
-    const [openMenu, setOpenMenu] =
-        useState<string | null>(null);
-
-
-    const handleMenuToggle = (
-        categoryId: string
-    ) => {
-
-        setOpenMenu((current) =>
-            current === categoryId
-                ? null
-                : categoryId
-        );
-
-    };
-
-    const handleCategoryClick = (category: string) => {
-        const categoryPlants = getCategoryPlantCountsById.filter((plant) =>
-            plant.categories.includes(category));
-
-        openPlantModal(category, categoryPlants);
-    }
 
     return (
         <div className="space-y-6">
@@ -94,7 +64,7 @@ export default function Categories() {
 
                 <button
                     onClick={openNewCategoryModal}
-                    className="flex items-center gap-2 rounded-lg bg-[#486344] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#3d5739]"
+                    className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#486344] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#3d5739]"
                 >
 
                     <Plus className="h-4 w-4" />
@@ -130,188 +100,159 @@ export default function Categories() {
             {/* Loading */}
 
             {loading && (
-                <p>
-                    Loading categories....
-                </p>
+                <div className="flex min-h-48 items-center justify-center">
+                    <p className="text-sm text-[#7b847a]">
+                        Loading categories...
+                    </p>
+                </div>
             )}
 
 
             {/* Error */}
 
-            {error && (
-                <p>
-                    {error}
-                </p>
+            {!loading && error && (
+                <div className="flex min-h-48 items-center justify-center text-center">
+                    <div>
+                        <p className="text-sm font-medium text-red-600">
+                            Failed to load categories
+                        </p>
+
+                        <p className="mt-1 text-xs text-[#929a91]">
+                            {error}
+                        </p>
+                    </div>
+                </div>
             )}
+
+
+            {/* Empty */}
+
+            {!loading &&
+                !error &&
+                filteredCategories.length === 0 && (
+                    <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border border-[#e1e5de] bg-white text-center">
+                        <FolderTree className="h-10 w-10 text-[#b3c0ae]" />
+
+                        <p className="mt-3 text-sm font-medium text-[#596257]">
+                            No categories to display
+                        </p>
+
+                        <p className="mt-1 text-xs text-[#929a91]">
+                            {search
+                                ? "Try adjusting your search."
+                                : "Create a category to get started."}
+                        </p>
+                    </div>
+                )}
 
 
             {/* Categories */}
 
-            {!loading && !error && (
+            {!loading &&
+                !error &&
+                filteredCategories.length > 0 && (
 
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
-                    {filteredCategories.map((category) => {
+                        {filteredCategories.map((category) => {
 
-                        const categoryCount =
-                            categoriesCount.find(
-                                (item) =>
-                                    item.category.toLowerCase() ===
-                                    category.label.toLowerCase()
-                            );
+                            const plantCount =
+                                category._count.plants +
+                                category._count.plantCaches;
 
+                            return (
 
-                        return (
+                                <div
+                                    key={category.id}
 
-                            <div
-                                key={category.id}
+                                    onClick={() =>
+                                        openPlantModal(category)
+                                    }
 
-                                onClick={() =>
-                                    handleCategoryClick(
-                                        category.label
-                                    )
-                                }
+                                    className="relative cursor-pointer rounded-xl border border-[#e1e5de] bg-white p-5 shadow-sm transition hover:shadow-md"
+                                >
 
-                                className="relative cursor-pointer rounded-xl border border-[#e1e5de] bg-white p-5 shadow-sm transition hover:shadow-md"
-                            >
-
-                                <div className="flex items-center justify-between">
+                                    <div className="flex items-start justify-between gap-3">
 
 
-                                    {/* Category information */}
+                                        {/* Category information */}
 
-                                    <div className="flex items-center gap-3">
+                                        <div className="flex min-w-0 items-center gap-3">
 
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f0f4ed]">
+                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#f0f4ed]">
 
-                                            <FolderTree className="h-5 w-5 text-[#486344]" />
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <h4 className="text-sm font-semibold text-[#263126]">
-
-                                                {category.label}
-
-                                            </h4>
-
-
-                                            <p className="mt-1 text-xs text-[#929a91]">
-
-                                                {categoryCount?.count ?? 0}{" "}
-
-                                                {categoryCount?.count === 1
-                                                    ? "plant"
-                                                    : "plants"}
-
-                                            </p>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    {/* Three-dot menu */}
-
-                                    <div className="relative">
-
-                                        <button
-                                            onClick={(event) => {
-
-                                                event.stopPropagation();
-
-                                                handleMenuToggle(
-                                                    category.id
-                                                );
-
-                                            }}
-
-                                            className="flex h-8 w-8 items-center justify-center rounded-lg text-[#929a91] transition hover:bg-[#f0f4ed] hover:text-[#486344]"
-                                        >
-
-                                            <MoreVertical className="h-5 w-5" />
-
-                                        </button>
-
-
-                                        {/* Dropdown */}
-
-                                        {openMenu === category.id && (
-
-                                            <div className="absolute right-0 top-10 z-10 w-36 overflow-hidden rounded-lg border border-[#e1e5de] bg-white py-1 shadow-lg">
-
-
-                                                {/* Edit */}
-
-                                                <button
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-                                                        setOpenMenu(null);
-
-                                                        openEditCategoryModal(category);
-                                                    }}
-                                                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#263126] transition hover:bg-[#f5f7f3]"
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                    Edit
-                                                </button>
-
-                                                {/* Delete */}
-                                                <button
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-
-                                                        setOpenMenu(null);
-
-                                                        handleDeleteCategoryClick(category);
-                                                    }}
-                                                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 transition hover:bg-red-50"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-
-                                                    Delete
-                                                </button>
-
+                                                <FolderTree className="h-5 w-5 text-[#486344]" />
 
                                             </div>
 
-                                        )}
+
+                                            <div className="min-w-0">
+
+                                                <h4 className="truncate text-sm font-semibold text-[#263126]">
+
+                                                    {category.name}
+
+                                                </h4>
+
+
+                                                <p className="mt-1 text-xs text-[#929a91]">
+
+                                                    {plantCount}{" "}
+
+                                                    {plantCount === 1
+                                                        ? "plant"
+                                                        : "plants"}
+
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        {/* Edit */}
+
+                                        <button
+                                            type="button"
+                                            title="Edit category"
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+
+                                                openEditCategoryModal(category);
+                                            }}
+                                            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[#929a91] transition hover:bg-[#f0f4ed] hover:text-[#486344]"
+                                        >
+                                            <Pencil className="h-4 w-4" />
+                                        </button>
 
                                     </div>
 
+                                    {category.description && (
+                                        <p className="mt-3 line-clamp-2 text-xs text-[#7b847a]">
+                                            {category.description}
+                                        </p>
+                                    )}
+
                                 </div>
 
-                            </div>
+                            );
 
-                        );
+                        })}
 
-                    })}
+                    </div>
 
-                </div>
-
-            )}
+                )}
 
 
             {/* Category Plants Modal */}
 
             <CategoryPlantsModal
-                isOpen={
-                    isCategoryPlantsModalOpen
-                }
-
-                categoryName={
-                    isSelectedCategory ?? ""
-                }
-
-                plants={
-                    getCategoryPlantCountsById
-                }
-
-                onClose={
-                    closePlantModal
-                }
+                isOpen={isCategoryPlantsModalOpen}
+                categoryName={selectedCategoryName}
+                plants={selectedCategoryPlants}
+                loading={loadingCategoryPlants}
+                error={categoryPlantsError}
+                onClose={closePlantModal}
             />
 
             <CreateCategoryModal

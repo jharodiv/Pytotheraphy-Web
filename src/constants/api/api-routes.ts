@@ -14,6 +14,12 @@ export const API_ROUTES = {
         DELETE_PLANT: (plantId: string) => `/api/v1/admin/plants/delete/${plantId}`,
         UPDATE_PLANT: (plantId: string) => `/api/v1/admin/plants/update/${plantId}`,
     },
+    CATEGORIES: {
+        GET_CATEGORIES: "/api/v1/admin/categories/getCategories",
+        GET_CATEGORY_BY_ID: (categoryId: string) => `/api/v1/admin/categories/getCategoryById/${categoryId}`,
+        CREATE_CATEGORY: "/api/v1/admin/categories/create",
+        UPDATE_CATEGORY: (categoryId: string) => `/api/v1/admin/categories/update/${categoryId}`,
+    },
     USERS: {
         GET_USERS: "/api/v1/admin/user/getUsers",
         GET_USER_BY_ID: (userId: string) => `/api/v1/admin/user/${userId}`,

@@ -3,7 +3,7 @@ import type {
     SetStateAction,
 } from "react";
 
-import type { PlantModel } from "@model/dashboard/plants.model";
+import type { PlantCategory, PlantModel } from "@model/dashboard/plants.model";
 
 // Plant Filter
 
@@ -52,12 +52,9 @@ export interface UsePlantsReturn {
 
     openCreateModal: () => void;
     closeCreateModal: () => void;
-    updateCreateField: (
-        field: keyof Omit<
-            PlantModel,
-            "id"
-        >,
-        value: string | boolean | string[]
+    updateCreateField: <K extends keyof Omit<PlantModel, "id">>(
+        field: K,
+        value: Omit<PlantModel, "id">[K]
     ) => void;
     createModalOpen: boolean;
 
@@ -115,12 +112,16 @@ export interface UsePlantsReturn {
     // Save Entire Plant
 
     saveEdit: () => Promise<void>;
+
+    // Categories a plant can be assigned to
+    categoryOptions: PlantCategory[];
 }
 
 // Edit Plant Modal Props
 
 export interface EditPlantModalProps {
     plant: PlantModel;
+    categoryOptions: PlantCategory[];
     editingFields: Set<keyof PlantModel>;
     changedFields: Set<keyof PlantModel>;
     saving: boolean;
@@ -178,11 +179,12 @@ export interface EditableTextareaProps {
 
 export interface CreatePlantModalProps {
     plant: Omit<PlantModel, "id">;
+    categoryOptions: PlantCategory[];
     saving: boolean;
     onClose: () => void;
-    onChange: (
-        field: keyof Omit<PlantModel, "id">,
-        value: string | boolean | string[]
+    onChange: <K extends keyof Omit<PlantModel, "id">>(
+        field: K,
+        value: Omit<PlantModel, "id">[K]
     ) => void;
     onSave: () => Promise<void>;
 }
@@ -198,3 +200,12 @@ export interface CreatePlantResponse {
 }
 
 
+
+// Category Picker Props
+
+export interface CategoryPickerProps {
+    options: PlantCategory[];
+    selected: PlantCategory[];
+    onChange: (categories: PlantCategory[]) => void;
+    disabled?: boolean;
+}

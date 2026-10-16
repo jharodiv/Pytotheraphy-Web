@@ -13,7 +13,9 @@ import {
     updatePlant,
 } from "@service/dashboard/plantsSection/plants.service";
 
-import type { PlantModel } from "@model/dashboard/plants.model";
+import { getCategories } from "@service/dashboard/categorySection/category.service";
+
+import type { PlantCategory, PlantModel } from "@model/dashboard/plants.model";
 
 import type {
     PlantFilter,
@@ -88,6 +90,10 @@ export function usePlants(): UsePlantsReturn {
 
     const [createModalOpen, setCreateModalOpen] = useState(false);
 
+    // Categories a plant can be assigned to
+    const [categoryOptions, setCategoryOptions] =
+        useState<PlantCategory[]>([]);
+
     const { openConfirmation } = useConfirmation();
 
     // Fetch Plants
@@ -113,6 +119,27 @@ export function usePlants(): UsePlantsReturn {
             );
         } finally {
             setLoading(false);
+        }
+    }, []);
+
+    // Fetch Category Options
+
+    const fetchCategoryOptions = useCallback(async () => {
+        try {
+            const data = await getCategories();
+
+            setCategoryOptions(
+                data.map(({ id, name }) => ({
+                    id,
+                    name,
+                }))
+            );
+        } catch (error) {
+            // The plant list still works without the picker options
+            console.error(
+                "Failed to fetch category options:",
+                error
+            );
         }
     }, []);
 
@@ -557,16 +584,13 @@ export function usePlants(): UsePlantsReturn {
                 ...plantData
             } = editForm;
 
-            await updatePlant(id, plantData);
+            const updatedPlant = await updatePlant(id, plantData);
 
-            // Update local list
+            // Use the saved plant from the API, since verifying moves it between tables
             setPlants((current) =>
                 current.map((plant) =>
                     plant.id === id
-                        ? {
-                            ...plant,
-                            ...plantData,
-                        }
+                        ? updatedPlant
                         : plant
                 )
             );
@@ -594,7 +618,8 @@ export function usePlants(): UsePlantsReturn {
 
     useEffect(() => {
         fetchPlants();
-    }, [fetchPlants]);
+        fetchCategoryOptions();
+    }, [fetchPlants, fetchCategoryOptions]);
 
     return {
         plants,
@@ -649,5 +674,7 @@ export function usePlants(): UsePlantsReturn {
 
         // Save entire plant
         saveEdit,
+
+        categoryOptions,
     };
 }

@@ -1,70 +1,107 @@
-import type { CategoryModel, CategoryCount } from "@model/dashboard/categories.model";
-import type { PlantModel } from "@model/dashboard/plants.model";
+import type {
+    CategoryDetailModel,
+    CategoryModel,
+    CategoryPlant,
+} from "@model/dashboard/categories.model";
+
+// Request Payloads
+
+export type CreateCategoryPayload = {
+    name: string;
+    description?: string;
+}
+
+export type UpdateCategoryPayload = {
+    name?: string;
+    // null clears the description
+    description?: string | null;
+}
+
+// API Responses
+
+export interface CategoriesResponse {
+    data: CategoryModel[],
+    message: string
+}
+
+export interface CategoryResponse {
+    data: CategoryModel,
+    message: string
+}
+
+export interface CategoryDetailResponse {
+    data: CategoryDetailModel,
+    message: string
+}
+
+// Plants shown inside a category
+
+export type CategoryPlantItem = CategoryPlant & {
+    verified: boolean;
+}
+
+// useCategories Return Type
 
 export interface UseCategoriesReturn {
-    categories: CategoryModel[]
+    categories: CategoryModel[];
     filteredCategories: CategoryModel[];
+
+    search: string;
+    setSearch: (search: string) => void;
+
     loading: boolean;
+    error: string | null;
+
     isCreating: boolean;
     isUpdating: boolean;
-    isDeleting: boolean;
-    error: string | null;
-    search: string;
-    categoriesCount: CategoryCount[];
-    getCategoryPlantCountsById: PlantModel[];
-    isSelectedCategory: string | null;
-    selectedCategory: CategoryModel | null;
-    isNewCategoryModalOpen: boolean;
-    isCategoryPlantsModalOpen: boolean;
-    isEditCategoryModalOpen: boolean;
-    selectedCategoryPlants: PlantModel[];
-    setSelectedCategory: (selectedCategory: CategoryModel | null) => void;
-    setIsSelectedCategory: (isSelectedCategory: string | null) => void;
-    setSearch: (search: string) => void;
-    setLoading: (loading: boolean) => void;
-    setIsCreating: (isCreating: boolean) => void;
-    setIsUpdating: (isUpdating: boolean) => void;
-    setIsEditCategoryModalOpen: (isEditCategoryModalOpen: boolean) => void;
-    setError: (error: string | null) => void;
-    setCategories: (categories: CategoryModel[]) => void;
-    setCategoriesCount: (categoriesCount: CategoryCount[]) => void;
-    setCategoryPlantCountsById: (getCategoryPlantCountsById: PlantModel[]) => void;
-    setSelectedCategoryPlants: (selectedCategoryPlants: PlantModel[]) => void;
+
     fetchCategories: () => Promise<void>;
-    fetchCategoriesCount: () => Promise<void>;
-    fetchPlantsByCategory: (category: string) => Promise<void>;
-    openPlantModal: (category: string, categoryPlants: PlantModel[]) => void;
-    openNewCategoryModal: () => void;
-    openEditCategoryModal: (category: CategoryModel) => void;
-    closeNewCategoryModal: () => void;
+
+    // Category plants modal
+    isCategoryPlantsModalOpen: boolean;
+    selectedCategoryName: string;
+    selectedCategoryPlants: CategoryPlantItem[];
+    loadingCategoryPlants: boolean;
+    categoryPlantsError: string | null;
+    openPlantModal: (category: CategoryModel) => Promise<void>;
     closePlantModal: () => void;
+
+    // Create modal
+    isNewCategoryModalOpen: boolean;
+    openNewCategoryModal: () => void;
+    closeNewCategoryModal: () => void;
+    createNewCategory: (name: string, description: string) => Promise<void>;
+
+    // Edit modal
+    isEditCategoryModalOpen: boolean;
+    selectedCategory: CategoryModel | null;
+    openEditCategoryModal: (category: CategoryModel) => void;
     closeEditCategoryModal: () => void;
-    setIsNewCategoryModalOpen: (isNewCategoryModalOpen: boolean) => void;
-    setIsCategoryPlantsModalOpen: (isCategoryPlantsModalOpen: boolean) => void;
-    createNewCategory: (label: string) => Promise<void>;
-    updateCategory: (id: string, label: string) => Promise<void>;
-    handleDeleteCategoryClick: (category: CategoryModel) => void;
-    deleteCategory: (id: string) => Promise<void>;
+    updateCategory: (id: string, name: string, description: string) => Promise<void>;
 }
+
+// Modal Props
 
 export interface CategoryPlantsModalProps {
     isOpen: boolean;
     categoryName: string;
-    plants: PlantModel[];
+    plants: CategoryPlantItem[];
+    loading: boolean;
+    error: string | null;
     onClose: () => void;
 }
 
 export interface CreateCategoryModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onCreate: (label: string) => Promise<void>;
+    onCreate: (name: string, description: string) => Promise<void>;
     isCreating: boolean;
 }
 
 export interface EditCategoryModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onEdit: (id: string, label: string) => Promise<void>;
+    onEdit: (id: string, name: string, description: string) => Promise<void>;
     isEditing: boolean;
     category: CategoryModel | null;
 }

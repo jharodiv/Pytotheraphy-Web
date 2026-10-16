@@ -4,6 +4,7 @@ import type { PlantModel } from "@model/dashboard/plants.model";
 
 import EditableInput from "@components/dashboard/plants/editableTextInput";
 import EditableTextarea from "@components/dashboard/plants/editableTextArea";
+import CategoryPicker from "@components/dashboard/plants/categoryPicker";
 
 import type {
     EditPlantModalProps,
@@ -11,6 +12,7 @@ import type {
 
 export default function EditPlantModal({
     plant,
+    categoryOptions,
     editingFields,
     changedFields,
     saving,
@@ -287,51 +289,101 @@ export default function EditPlantModal({
                         
                         {/* Categories                                          */}
 
-                        <EditableTextarea
-                            label="Categories"
-                            value={
-                                Array.isArray(
-                                    plant.categories
-                                )
-                                    ? plant.categories.join(
-                                        ", "
-                                    )
-                                    : ""
-                            }
-                            editing={isEditing(
-                                "categories"
-                            )}
-                            changed={isChanged(
-                                "categories"
-                            )}
-                            onEdit={() =>
-                                onEditField(
+                        <div>
+                            <div className="mb-2 flex items-center justify-between">
+                                <label className="text-xs font-medium text-[#596257]">
+                                    Categories
+                                </label>
+
+                                {!isEditing(
                                     "categories"
-                                )
-                            }
-                            onSave={() =>
-                                onSaveField(
+                                ) &&
+                                    !isChanged(
+                                        "categories"
+                                    ) && (
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                onEditField(
+                                                    "categories"
+                                                )
+                                            }
+                                            className="flex cursor-pointer items-center gap-1 text-xs font-medium text-[#486344]"
+                                        >
+                                            Edit
+                                        </button>
+                                    )}
+
+                                {!isEditing(
                                     "categories"
-                                )
-                            }
-                            onChange={(value) =>
-                                onChangeField(
-                                    "categories",
-                                    value
-                                        .split(",")
-                                        .map((item) =>
-                                            item.trim()
-                                        )
-                                        .filter(Boolean)
-                                )
-                            }
-                            onClear={() =>
-                                onClearField(
+                                ) &&
+                                    isChanged(
+                                        "categories"
+                                    ) && (
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                onClearField(
+                                                    "categories"
+                                                )
+                                            }
+                                            className="text-xs font-medium text-[#7b847a] hover:text-[#c65353]"
+                                        >
+                                            Clear
+                                        </button>
+                                    )}
+
+                                {isEditing(
                                     "categories"
-                                )
-                            }
-                            placeholder="Separate categories with commas"
-                        />
+                                ) && (
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                onSaveField(
+                                                    "categories"
+                                                )
+                                            }
+                                            className="rounded-md bg-[#486344] px-2.5 py-1 text-xs font-medium text-white"
+                                        >
+                                            Save
+                                        </button>
+                                    )}
+                            </div>
+
+                            <div className="rounded-lg border border-[#dfe4dc] bg-[#fafbf9] px-4 py-3">
+                                {isEditing(
+                                    "categories"
+                                ) ? (
+                                    <CategoryPicker
+                                        options={categoryOptions}
+                                        selected={plant.categories}
+                                        onChange={(categories) =>
+                                            onChangeField(
+                                                "categories",
+                                                categories
+                                            )
+                                        }
+                                    />
+                                ) : plant.categories.length > 0 ? (
+                                    <div className="flex flex-wrap gap-2">
+                                        {plant.categories.map(
+                                            (category) => (
+                                                <span
+                                                    key={category.id}
+                                                    className="rounded-full bg-[#edf4eb] px-3 py-1 text-xs font-medium text-[#486344]"
+                                                >
+                                                    {category.name}
+                                                </span>
+                                            )
+                                        )}
+                                    </div>
+                                ) : (
+                                    <p className="text-xs text-[#7b847a]">
+                                        No categories assigned.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
 
                         {/* Image URL                                           */}
 

@@ -1,60 +1,45 @@
-import { useConfirmation } from "@hooks/globalized/useConfirmation";
-import type { CategoryModel, CategoryCount } from "@model/dashboard/categories.model";
-import type { PlantModel } from "@model/dashboard/plants.model";
-import { getCategories, getCategoryPlantCounts, getCategoriesPlantsById, createPlantCategory, updatePlantCategory, deletePlantCategory } from "@service/dashboard/categorySection/category.service";
-import type { UseCategoriesReturn } from "@type/dashboard/categoties.type";
+import type { CategoryModel } from "@model/dashboard/categories.model";
+import {
+    createCategory,
+    getCategories,
+    getCategoryById,
+    updateCategory as updateCategoryRequest,
+} from "@service/dashboard/categorySection/category.service";
+import type {
+    CategoryPlantItem,
+    UseCategoriesReturn,
+} from "@type/dashboard/categoties.type";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export function useCategories(): UseCategoriesReturn {
 
-    const [loading, setLoading] = useState(false);
+    // Data State
+
+    const [categories, setCategories] = useState<CategoryModel[]>([]);
+    const [search, setSearch] = useState("");
+
+    // Status State
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [error, setError] = useState(null);
-    const [search, setSearch] = useState("");
+
+    // Category Plants Modal State
+
     const [isCategoryPlantsModalOpen, setIsCategoryPlantsModalOpen] = useState(false);
+    const [selectedCategoryName, setSelectedCategoryName] = useState("");
+    const [selectedCategoryPlants, setSelectedCategoryPlants] = useState<CategoryPlantItem[]>([]);
+    const [loadingCategoryPlants, setLoadingCategoryPlants] = useState(false);
+    const [categoryPlantsError, setCategoryPlantsError] = useState<string | null>(null);
+
+    // Create / Edit Modal State
+
     const [isNewCategoryModalOpen, setIsNewCategoryModalOpen] = useState(false);
     const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false);
-    const [isSelectedCategory, setIsSelectedCategory] = useState<string | null>(null); const [categories, setCategories] = useState<CategoryModel[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<CategoryModel | null>(null);
-    const [categoriesCount, setCategoriesCount] = useState<CategoryCount[]>([]);
-    const [getCategoryPlantCountsById, setCategoryPlantCountsById] = useState<PlantModel[]>([]);
-    const [selectedCategoryPlants, setSelectedCategoryPlants] = useState<PlantModel[]>([]);
 
-    const { openConfirmation } = useConfirmation();
-
-    const openNewCategoryModal = useCallback(() => {
-        setIsNewCategoryModalOpen(true);
-    }, [])
-
-    const closeNewCategoryModal = useCallback(() => {
-        setIsNewCategoryModalOpen(false);
-    }, [])
-
-    const openEditCategoryModal = useCallback(
-        (category: CategoryModel) => {
-            setSelectedCategory(category);
-            setIsEditCategoryModalOpen(true);
-        },
-        []
-    );
-
-    const closeEditCategoryModal = useCallback(() => {
-        setIsEditCategoryModalOpen(false);
-    }, [])
-
-    const openPlantModal = useCallback((category: string, categoryPlants: PlantModel[]) => {
-        setIsSelectedCategory(category);
-        setSelectedCategoryPlants(categoryPlants);
-        setIsCategoryPlantsModalOpen(true);
-    }, [])
-
-    const closePlantModal = useCallback(() => {
-        setIsSelectedCategory(null);
-        setIsCategoryPlantsModalOpen(false);
-    }, [])
-
+    // Fetch Categories
 
     const fetchCategories = useCallback(async () => {
         try {
@@ -69,211 +54,181 @@ export function useCategories(): UseCategoriesReturn {
                 "Failed to fetch categories:",
                 error
             );
+
             setError(error instanceof Error ? error.message : "Unable to load categories");
         } finally {
             setLoading(false);
         }
+    }, []);
 
-    }, [])
-
-
-    const fetchCategoriesCount = useCallback(async () => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const data = await getCategoryPlantCounts();
-            setCategoriesCount(data);
-        } catch (error) {
-            console.error(
-                "Failed to fetch the categories count"
-            );
-
-            setError(error instanceof Error ? error.message : "Unable to load the categories count");
-        } finally {
-            setLoading(false);
-        }
-    }, [])
-
-
-    const fetchPlantsByCategory = useCallback(async (category: string) => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const data = await getCategoriesPlantsById(category);
-
-            setCategoryPlantCountsById(data);
-
-        } catch (error) {
-            console.error(
-                "Failed to fetch the categories plants by id"
-            );
-
-            setError(error instanceof Error ? error.message : "Unable to load the categories plants by id");
-        } finally {
-            setLoading(false);
-        }
-    }, [])
+    // Filter Categories
 
     const filteredCategories = useMemo(() => {
+        const searchTerm = search.toLowerCase().trim();
+
         return categories.filter((category) =>
-            category.label
+            category.name
                 .toLowerCase()
-                .includes(search.toLowerCase())
-        )
-    }, [categories, search])
+                .includes(searchTerm)
+        );
+    }, [categories, search]);
 
-    const updateCategory = useCallback(
-        async (id: string, label: string): Promise<void> => {
-            try {
-                setIsUpdating(true);
-                setError(null);
+    // Category Plants Modal
 
-                await updatePlantCategory(id, label);
+    const openPlantModal = useCallback(async (category: CategoryModel) => {
+        setSelectedCategoryName(category.name);
+        setSelectedCategoryPlants([]);
+        setCategoryPlantsError(null);
+        setIsCategoryPlantsModalOpen(true);
 
-                setCategories((current) =>
-                    current.map((category) =>
-                        category.id === id
-                            ? { ...category, label }
-                            : category
-                    )
-                );
+        try {
+            setLoadingCategoryPlants(true);
 
-                closeEditCategoryModal();
+            const detail = await getCategoryById(category.id);
 
-            } catch (error) {
-                console.error(
-                    "Failed to update a category"
-                );
+            setSelectedCategoryPlants([
+                ...detail.plants.map((plant) => ({
+                    ...plant,
+                    verified: true,
+                })),
+                ...detail.plantCaches.map((plant) => ({
+                    ...plant,
+                    verified: false,
+                })),
+            ]);
+        } catch (error) {
+            console.error(
+                "Failed to fetch the category plants",
+                error
+            );
 
-                setError(error instanceof Error ? error.message : "Unable to update a category");
-            } finally {
-                setIsUpdating(false);
-            }
-        }, [closeEditCategoryModal]
-    )
+            setCategoryPlantsError(error instanceof Error ? error.message : "Unable to load plants for this category");
+        } finally {
+            setLoadingCategoryPlants(false);
+        }
+    }, []);
 
+    const closePlantModal = useCallback(() => {
+        setIsCategoryPlantsModalOpen(false);
+        setSelectedCategoryName("");
+        setSelectedCategoryPlants([]);
+    }, []);
 
+    // Create Modal
+
+    const openNewCategoryModal = useCallback(() => {
+        setIsNewCategoryModalOpen(true);
+    }, []);
+
+    const closeNewCategoryModal = useCallback(() => {
+        setIsNewCategoryModalOpen(false);
+    }, []);
+
+    // Throws on failure so the modal can stay open and show the error
     const createNewCategory = useCallback(
-        async (label: string): Promise<void> => {
+        async (name: string, description: string): Promise<void> => {
             try {
                 setIsCreating(true);
-                setError(null);
 
-                const newCategory = await createPlantCategory(label);
+                const newCategory = await createCategory({
+                    name,
+                    ...(description && { description }),
+                });
 
-                setCategories((current) => [
-                    ...current,
-                    newCategory
-                ]);
-
-                closeNewCategoryModal();
-
-                console.log(
-                    "Successfully Created a Plant Category"
-                )
-            } catch (error) {
-                console.error(
-                    "Failed to create a category"
+                setCategories((current) =>
+                    [...current, newCategory].sort((a, b) =>
+                        a.name.localeCompare(b.name)
+                    )
                 );
-
-                setError(error instanceof Error ? error.message : "Unable to create a category");
             } finally {
                 setIsCreating(false);
             }
-        }, [fetchCategories, closeNewCategoryModal])
-
-
-    const deleteCategory = useCallback(
-        async (id: string): Promise<void> => {
-            try {
-                setIsDeleting(true);
-                setError(null);
-
-                await deletePlantCategory(id);
-
-                setCategories(current =>
-                    current.filter(category => category.id !== id)
-                );
-
-            } catch (error) {
-                console.error(
-                    "Failed to delete the category",
-                    error
-                );
-
-                setError(error instanceof Error ? error.message : "Unable to delete the category");
-
-                throw error;
-            } finally {
-                setIsDeleting(false);
-            }
-
         }, []
-    )
+    );
 
-    const handleDeleteCategoryClick = (category: CategoryModel) => {
-        openConfirmation({
-            title: "Delete Category?",
-            description: `Are you sure you want to delete ${category.label}?`,
-            confirmText: "Delete Category",
-            onConfirm: () => deleteCategory(category.id)
-        })
-    }
+    // Edit Modal
+
+    const openEditCategoryModal = useCallback(
+        (category: CategoryModel) => {
+            setSelectedCategory(category);
+            setIsEditCategoryModalOpen(true);
+        },
+        []
+    );
+
+    const closeEditCategoryModal = useCallback(() => {
+        setIsEditCategoryModalOpen(false);
+        setSelectedCategory(null);
+    }, []);
+
+    // Throws on failure so the modal can stay open and show the error
+    const updateCategory = useCallback(
+        async (id: string, name: string, description: string): Promise<void> => {
+            try {
+                setIsUpdating(true);
+
+                const updatedCategory = await updateCategoryRequest(id, {
+                    name,
+                    // Empty description clears it
+                    description: description || null,
+                });
+
+                setCategories((current) =>
+                    current
+                        .map((category) =>
+                            category.id === id
+                                ? updatedCategory
+                                : category
+                        )
+                        .sort((a, b) =>
+                            a.name.localeCompare(b.name)
+                        )
+                );
+            } finally {
+                setIsUpdating(false);
+            }
+        }, []
+    );
 
     useEffect(() => {
         fetchCategories();
-        fetchCategoriesCount();
-    }, [fetchCategories, fetchCategoriesCount]);
+    }, [fetchCategories]);
 
     return {
         categories,
-        categoriesCount,
-        getCategoryPlantCountsById,
+        filteredCategories,
 
-        isCategoryPlantsModalOpen,
-        isSelectedCategory,
-        selectedCategoryPlants,
-        isEditCategoryModalOpen,
-        selectedCategory,
+        search,
+        setSearch,
 
         loading,
+        error,
+
         isCreating,
         isUpdating,
-        isDeleting,
-        error,
-        search,
-
-        setLoading,
-        setError,
-        setSearch,
-        setCategories,
-        setCategoriesCount,
-        setCategoryPlantCountsById,
-        setIsCategoryPlantsModalOpen,
-        setIsSelectedCategory,
-        setSelectedCategory,
-        setIsCreating,
-        setIsNewCategoryModalOpen,
-        setSelectedCategoryPlants,
-        setIsUpdating,
-        setIsEditCategoryModalOpen,
 
         fetchCategories,
-        fetchCategoriesCount,
-        fetchPlantsByCategory,
-        filteredCategories,
-        createNewCategory,
-        updateCategory,
+
+        // Category plants modal
+        isCategoryPlantsModalOpen,
+        selectedCategoryName,
+        selectedCategoryPlants,
+        loadingCategoryPlants,
+        categoryPlantsError,
         openPlantModal,
         closePlantModal,
+
+        // Create modal
+        isNewCategoryModalOpen,
         openNewCategoryModal,
         closeNewCategoryModal,
+        createNewCategory,
+
+        // Edit modal
+        isEditCategoryModalOpen,
+        selectedCategory,
         openEditCategoryModal,
         closeEditCategoryModal,
-        handleDeleteCategoryClick,
-        deleteCategory,
-        isNewCategoryModalOpen,
+        updateCategory,
     };
 }
