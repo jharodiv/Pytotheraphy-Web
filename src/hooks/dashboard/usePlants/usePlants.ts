@@ -554,7 +554,6 @@ export function usePlants(): UsePlantsReturn {
 
             const {
                 id,
-                verification,
                 ...plantData
             } = editForm;
 
@@ -567,7 +566,6 @@ export function usePlants(): UsePlantsReturn {
                         ? {
                             ...plant,
                             ...plantData,
-                            verification,
                         }
                         : plant
                 )

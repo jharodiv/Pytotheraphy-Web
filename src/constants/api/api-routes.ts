@@ -13,5 +13,12 @@ export const API_ROUTES = {
         CREATE_PLANT: "/api/v1/admin/plants/create",
         DELETE_PLANT: (plantId: string) => `/api/v1/admin/plants/delete/${plantId}`,
         UPDATE_PLANT: (plantId: string) => `/api/v1/admin/plants/update/${plantId}`,
+    },
+    USERS: {
+        GET_USERS: "/api/v1/admin/user/getUsers",
+        GET_USER_BY_ID: (userId: string) => `/api/v1/admin/user/${userId}`,
+        CREATE_USER: "/api/v1/admin/user/createUser",
+        UPDATE_USER: (userId: string) => `/api/v1/admin/user/updateUser/${userId}`,
+        DELETE_USER: (userId: string) => `/api/v1/admin/user/deleteUser/${userId}`,
     }
 }

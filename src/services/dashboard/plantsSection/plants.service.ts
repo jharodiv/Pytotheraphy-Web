@@ -1,20 +1,9 @@
-import {
-    deleteDoc,
-    doc,
-    getDoc,
-    updateDoc,
-    runTransaction,
-} from "firebase/firestore";
 
-import { db } from "@service/database/firebase";
 
 import type { PlantModel } from "@model/dashboard/plants.model";
 import { apiRequest } from "@service/api/api";
 import { API_ROUTES } from "@constant/api/api-routes";
 import type { PlantResponse, CreatePlantResponse } from "@type/dashboard/plant.types";
-
-const PLANT_COLLECTION = "plants";
-const PLANT_CACHE_COLLECTION = "plant_cache";
 
 /**
  * Get all verified plants from the plants collection.
@@ -154,31 +143,31 @@ export async function addPlant(
  * Update an existing verified plant.
  */
 
-export async function updatePlant(
-    id: string,
-    plant: Partial<Omit<PlantModel, "id">>
-): Promise<void> {
-    try {
-        const response = await apiRequest<void>(
-            API_ROUTES.PLANTS.UPDATE_PLANT(id),
-            {
-                method: "PUT",
-                body: JSON.stringify(plant),
-            }
-        );
+    export async function updatePlant(
+        id: string,
+        plant: Partial<Omit<PlantModel, "id">>
+    ): Promise<PlantModel> {
+        try {
+            const response = await apiRequest<PlantModel>(
+                API_ROUTES.PLANTS.UPDATE_PLANT(id),
+                {
+                    method: "PUT",
+                    body: JSON.stringify(plant),
+                }
+            );
 
-        return response;
-    } catch (error) {
-        console.error(
-            `Failed to update plant with ID ${id}:`,
-            error
-        );
+            return response;    
+        } catch (error) {
+            console.error(
+                `Failed to update plant with ID ${id}:`,
+                error
+            );
 
-        throw new Error(
-            "Unable to update plant."
-        );
+            throw new Error(
+                "Unable to update plant."
+            );
+        }
     }
-}
 
 /**
  * Delete an existing verified plant.
