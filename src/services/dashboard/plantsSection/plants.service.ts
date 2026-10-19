@@ -1,5 +1,3 @@
-
-
 import type { PlantModel } from "@model/dashboard/plants.model";
 import { apiRequest } from "@service/api/api";
 import { API_ROUTES } from "@constant/api/api-routes";

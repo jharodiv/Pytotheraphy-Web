@@ -26,5 +26,10 @@ export const API_ROUTES = {
         CREATE_USER: "/api/v1/admin/user/createUser",
         UPDATE_USER: (userId: string) => `/api/v1/admin/user/updateUser/${userId}`,
         DELETE_USER: (userId: string) => `/api/v1/admin/user/deleteUser/${userId}`,
+    },
+    ADMIN_LOGS: {
+        GET_LOGS: "/api/v1/admin/logs",
+        GET_LOG_COUNTS: "/api/v1/admin/logs/count",
+        GET_RECENT_LOGS: "/api/v1/admin/logs/recent",
     }
 }

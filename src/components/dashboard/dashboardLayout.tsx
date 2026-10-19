@@ -7,6 +7,7 @@ import Home from "@pages/dashboard/home";
 import Plants from "@pages/dashboard/plants";
 import Categories from "@pages/dashboard/categories";
 import Users from "@pages/dashboard/users";
+import AdminLogs from "@pages/dashboard/adminLogs";
 
 export default function DashboardLayout() {
     const [activePage, setActivePage] = useState("home");
@@ -22,8 +23,11 @@ export default function DashboardLayout() {
             case "users":
                 return <Users />;
 
+            case "adminLogs":
+                return <AdminLogs />;
+
             default:
-                return <Home />;
+                return <Home onNavigate={setActivePage} />;
         }
     }
 
@@ -48,6 +52,13 @@ export default function DashboardLayout() {
                     title: "Users",
                     description:
                         "Manage registered users.",
+                };
+
+            case "adminLogs":
+                return {
+                    title: "Admin Logs",
+                    description:
+                        "Track changes made by administrators.",
                 };
 
             default:

@@ -3,6 +3,7 @@ import {
     LayoutDashboard,
     Leaf,
     LogOut,
+    ScrollText,
     Users,
 } from "lucide-react";
 
@@ -32,6 +33,11 @@ const navigation = [
         name: "Users",
         key: "users",
         icon: Users,
+    },
+    {
+        name: "Admin Logs",
+        key: "adminLogs",
+        icon: ScrollText,
     },
 ];
 

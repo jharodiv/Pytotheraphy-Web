@@ -12,7 +12,11 @@ import RecentAdminActivity from "@components/dashboard/homeComponents/recentAdmi
 
 import { useDashboardStats } from "@hooks/dashboard/useDashboardStats";
 
-export default function Home() {
+interface HomeProps {
+    onNavigate: (page: string) => void;
+}
+
+export default function Home({ onNavigate }: HomeProps) {
     const {
         stats,
         userGrowth,
@@ -104,7 +108,9 @@ export default function Home() {
             </div>
 
             {/* Recent Admin Activity */}
-            <RecentAdminActivity />
+            <RecentAdminActivity
+                onViewAll={() => onNavigate("adminLogs")}
+            />
         </div>
     );
 }
